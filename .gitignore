@@ -1,0 +1,43 @@
+# Data
+data/raw/
+data/interim/
+
+# R session
+.Rhistory
+.RData
+.Rapp.history
+.Rproj.user/
+*.Rproj
+
+# renv
+renv/library/
+renv/python/
+renv/staging/
+renv/local/
+
+# Environment
+.Renviron
+.env
+
+# LaTeX
+*.aux
+*.log
+*.bbl
+*.blg
+*.toc
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Output that's too big to track
+output/figures/*.png
+!output/figures/.gitkeep

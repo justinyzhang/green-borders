@@ -1,0 +1,5 @@
+# Copy this file to .Renviron (no extension) and fill in values.
+# .Renviron is gitignored.
+
+CENSUS_API_KEY=PASTE_YOUR_KEY_HERE
+# Get a free key at https://api.census.gov/data/key_signup.html

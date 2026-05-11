@@ -1,0 +1,24 @@
+{
+  "R": {
+    "Version": "4.5.0",
+    "Repositories": [
+      {"Name": "CRAN", "URL": "https://cloud.r-project.org"}
+    ]
+  },
+  "Packages": {
+    "data.table": {"Package": "data.table", "Version": "1.15.4", "Source": "Repository"},
+    "here":       {"Package": "here",       "Version": "1.0.1",  "Source": "Repository"},
+    "sandwich":   {"Package": "sandwich",   "Version": "3.1-0",  "Source": "Repository"},
+    "lmtest":     {"Package": "lmtest",     "Version": "0.9-40", "Source": "Repository"},
+    "ggplot2":    {"Package": "ggplot2",    "Version": "3.5.1",  "Source": "Repository"},
+    "httr":       {"Package": "httr",       "Version": "1.4.7",  "Source": "Repository"},
+    "jsonlite":   {"Package": "jsonlite",   "Version": "1.8.8",  "Source": "Repository"},
+    "pdftools":   {"Package": "pdftools",   "Version": "3.4.0",  "Source": "Repository"},
+    "stringr":    {"Package": "stringr",    "Version": "1.5.1",  "Source": "Repository"},
+    "rlang":      {"Package": "rlang",      "Version": "1.1.7",  "Source": "Repository", "Note": "1.1.7+ required for arrow / fixest / tidycensus"},
+    "fixest":     {"Package": "fixest",     "Version": "0.12.1", "Source": "Repository", "Note": "Optional; pipeline has lm+sandwich fallback"},
+    "sf":         {"Package": "sf",         "Version": "1.0-16", "Source": "Repository"},
+    "tigris":     {"Package": "tigris",     "Version": "2.1",    "Source": "Repository"},
+    "testthat":   {"Package": "testthat",   "Version": "3.2.1",  "Source": "Repository"}
+  }
+}
