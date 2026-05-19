@@ -1,0 +1,185 @@
+---
+title: "Untitled"
+output: html_document
+date: "2026-05-12"
+---
+
+```{r}
+# 安装 (首次 5-10 min)
+install.packages(c("tigris", "sf"))
+
+# 验证安装
+library(tigris)
+library(sf)
+
+# 跑
+setwd("C:/Thesis/green-borders")
+source("tests/verify_il_border_counties.R")
+```
+
+
+```{r}
+# Setup
+setwd("C:/Thesis/green-borders")
+Sys.setenv(CENSUS_API_KEY = "06ccec4c76195625755962fe0462040884f4f1d1")
+
+# Verify prerequisites
+stopifnot(
+  file.exists("R/00_build_metadata.R"),
+  file.exists("data/raw/leaic/35158-0001-Data.rda"),
+  length(list.files("data/raw/nibrs", pattern = "\\.rds$")) >= 24
+)
+cat("Prerequisites OK. Starting pipeline...\n\n")
+
+# Run pipeline
+scripts <- c("R/00_build_metadata.R",
+             "R/01_nibrs_load.R",
+             "R/02_acs.R",
+             "R/03_panel.R",
+             "R/04_raw_plot.R",
+             "R/05_twfe.R",
+             "R/06_eventstudy.R",
+             "R/07_robust.R")
+
+results <- list()
+for (s in scripts) {
+  cat("\n========== ", s, " ==========\n")
+  t0 <- Sys.time()
+  result <- tryCatch({
+    source(s)
+    "OK"
+  }, error = function(e) {
+    cat("\n!! ERROR:", conditionMessage(e), "\n")
+    conditionMessage(e)
+  })
+  results[[s]] <- list(status = result, time = round(as.numeric(difftime(Sys.time(), t0, units="secs")), 1))
+  cat("  ", results[[s]]$time, "sec --", results[[s]]$status, "\n")
+}
+
+cat("\n========== Summary ==========\n")
+for (s in names(results)) {
+  cat(sprintf("  %-30s %s (%ss)\n", s, results[[s]]$status, results[[s]]$time))
+}
+```
+
+
+
+
+
+
+
+
+
+```{r}
+setwd("C:/Thesis/green-borders")
+Sys.setenv(CENSUS_API_KEY = "06ccec4c76195625755962fe0462040884f4f1d1")
+
+scripts <- c("R/00_build_metadata.R",
+             "R/01_nibrs_load.R",
+             "R/02_acs.R",
+             "R/03_panel.R",
+             "R/04_raw_plot.R",
+             "R/05_twfe.R",
+             "R/06_eventstudy.R",
+             "R/07_robust.R")
+
+for (s in scripts) {
+  cat("\n========== ", s, " ==========\n")
+  t0 <- Sys.time()
+  result <- tryCatch(source(s), error = function(e) {
+    cat("\n!! ERROR in", s, ":", conditionMessage(e), "\n")
+    NULL
+  })
+  cat("  ", round(as.numeric(difftime(Sys.time(), t0, units="secs")), 1), "sec\n")
+}
+```
+
+
+```{r}
+setwd("C:/Thesis/green-borders")
+
+# 1. Verify metadata 是不是 TIGER 修正版
+cat("\n========== METADATA CHECK ==========\n")
+meta <- data.table::fread("data/processed/iowa_county_metadata.csv")
+print(meta[, .(n_total = .N, n_border = sum(border)), by = state_name])
+cat("Total treated:", sum(meta$border), "(should be 24 if TIGER-fixed; 27 if old)\n\n")
+
+# 2. Baseline DiD results (4 outcomes × 2 specs)
+cat("========== TAB1 BASELINE ==========\n")
+print(data.table::fread("out/tab1_baseline_coefs.csv"))
+
+# 3. Robustness
+cat("\n========== TAB2 ROBUSTNESS ==========\n")
+print(data.table::fread("out/tab2_robust_coefs.csv"))
+
+# 4. Event study coefficients (drug only, headline)
+cat("\n========== EVENT STUDY (drug) ==========\n")
+es <- data.table::fread("out/fig3_eventstudy_coefs.csv")
+print(es[outcome == "drug"])
+
+# 5. Panel sanity
+cat("\n========== PANEL SANITY ==========\n")
+panel <- readRDS("data/processed/panel_county_year.rds")
+cat("Total rows:", nrow(panel), "\n")
+cat("Treated obs (treat==1):", sum(panel$treat, na.rm = TRUE), 
+    "(should be 24*3=72 if TIGER; 27*3=81 if old)\n")
+```
+
+
+```{r}
+setwd("C:/Thesis/green-borders")
+```
+
+
+```{r}
+meta <- data.table::fread("data/processed/iowa_county_metadata.csv")
+```
+
+
+```{r}
+meta[, .(n_total = .N, n_border = sum(border)), by = state_name]
+```
+
+```{r}
+setwd("C:/Thesis/green-borders")
+
+# 删掉所有缓存中间产物
+file.remove(c(
+  "data/processed/iowa_county_metadata.csv",
+  "data/processed/panel_county_year.rds"
+))
+
+Sys.setenv(CENSUS_API_KEY = "06ccec4c76195625755962fe0462040884f4f1d1")
+
+# 重跑(metadata 改了,后面所有依赖它的都要重跑)
+source("R/00_build_metadata.R")
+source("R/03_panel.R")       # 重建 panel(NIBRS + ACS 不用重跑,interim 不变)
+source("R/04_raw_plot.R")
+source("R/05_twfe.R")
+source("R/06_eventstudy.R")
+source("R/07_robust.R")
+```
+```{r}
+install.packages("pdftools")
+```
+```{r}
+install.packages(
+  "fwildclusterboot",
+  repos = "https://s3alfisc.r-universe.dev"
+)
+
+library(fwildclusterboot)
+```
+```{r}
+install.packages("JuliaConnectoR")
+
+library(JuliaConnectoR)
+library(fwildclusterboot)
+```
+```{r}
+install.packages("dqrng")
+
+library(dqrng)
+library(fwildclusterboot)
+```
+
